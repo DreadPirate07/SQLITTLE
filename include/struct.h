@@ -1,23 +1,7 @@
-#ifndef INCLUDE_H
-#define INCLUDE_H
+#ifndef STRUCT_H
+#define STRUCT_H
 
-
-
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-
-#define COLUMN_USERNAME_SIZE 35
-#define COLUMN_EMAIL_SIZE 255
-#define TABLE_MAX_PAGES 100
-
-#define size_of_attribute(Struct, Attribute) sizeof(((Struct*)0)->Attribute)
-
+#include "include.h"
 
 // indicate success or failure.
 typedef enum
@@ -28,9 +12,11 @@ typedef enum
 
 
 // Informs more about the command status
-typedef enum
+typedef enum 
 {
   PREPARE_SUCCESS,
+  PREPARE_NEGATIVE_ID,
+  PREPARE_STRING_TOO_LONG,
   PREPARE_SYNTAX_ERROR,
   PREPARE_UNRECOGNIZED_STATEMENT
 } PrepareResult;
@@ -42,6 +28,20 @@ typedef enum
     STATEMENT_INSERT,
     STATEMENT_SELECT
 } StatementType;
+
+
+typedef enum
+{
+    EXECUTE_SUCCESS,
+    EXECUTE_DUPLICATE_KEY
+} ExecuteResult;
+
+typedef enum
+{
+    NODE_INTERNAL,
+    NODE_LEAF
+} NodeType;
+
 
 // for storing of parsed arguments into a struct
 typedef struct
@@ -68,37 +68,28 @@ typedef struct
 } InputBuffer;
 
 
-// table struct which holds the table data!
-typedef struct {
-    uint32_t num_rows;
-    void* pages[TABLE_MAX_PAGES];
-} Table;
-
-
-typedef enum {
-    EXECUTE_SUCCESS,
-    EXECUTE_TABLE_FULL
-} ExecuteResult;
-
-
-typedef struct {
+typedef struct
+{
   int file_descriptor;
   uint32_t file_length;
   uint32_t num_pages;
   void* pages[TABLE_MAX_PAGES];
 } Pager;
 
-typedef struct {
+typedef struct
+{
+  Pager* pager;
+  uint32_t root_page_num;
+} Table;
+
+typedef struct
+{
   Table* table;
   uint32_t page_num;
   uint32_t cell_num;
   bool end_of_table;  // Indicates a position one past the last element
 } Cursor;
 
-typedef enum {
-    NODE_INTERNAL,
-    NODE_LEAF
-} NodeType;
 
 const uint32_t ID_SIZE = size_of_attribute(Row, id);
 const uint32_t USERNAME_SIZE = size_of_attribute(Row, username);

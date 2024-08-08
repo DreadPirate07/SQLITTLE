@@ -1,7 +1,7 @@
 #ifndef BTREE_H
 #define BTREE_H
 
-#include "include.h"
+#include "struct.h"
 
 NodeType get_node_type(void* node);
 void set_node_type(void* node, NodeType type);
